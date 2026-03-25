@@ -1,0 +1,199 @@
+{
+  "name": "gold-ticker-statusbar",
+  "displayName": "Gold Price Ticker",
+  "description": "在 VS Code 状态栏显示伦敦金与国内金价，国内默认显示民生金，并支持切换浙商金、Au99.99、汇率换算与上金所延时行情。",
+  "version": "0.1.2",
+  "publisher": "Leega0",
+  "license": "MIT",
+  "author": {
+    "name": "Lee Gao"
+  },
+  "engines": {
+    "vscode": "^1.90.0"
+  },
+  "icon": "media/icon.png",
+  "categories": [
+    "Other"
+  ],
+  "keywords": [
+    "gold",
+    "gold price",
+    "xauusd",
+    "minsheng",
+    "zheshang",
+    "au99.99",
+    "sge",
+    "status bar"
+  ],
+  "galleryBanner": {
+    "color": "#101828",
+    "theme": "dark"
+  },
+  "files": [
+    "dist/extension.js",
+    "media/icon.png",
+    "README.md",
+    "LICENSE",
+    "package.json"
+  ],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "main": "./dist/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "goldTicker.refreshNow",
+        "title": "Gold Ticker: 立即刷新"
+      }
+    ],
+    "configuration": {
+      "title": "Gold Ticker",
+      "type": "object",
+      "properties": {
+        "goldTicker.refreshIntervalMs": {
+          "type": "number",
+          "default": 1000,
+          "minimum": 1000,
+          "scope": "window",
+          "markdownDescription": "轮询起始间隔，单位毫秒。默认 `1000`，即插件会尽量按每秒一次发起刷新。"
+        },
+        "goldTicker.showInternational": {
+          "type": "boolean",
+          "default": true,
+          "scope": "window",
+          "description": "是否显示国际金价状态栏项。"
+        },
+        "goldTicker.showChina": {
+          "type": "boolean",
+          "default": true,
+          "scope": "window",
+          "description": "是否显示中国金价状态栏项。"
+        },
+        "goldTicker.statusBarAlignment": {
+          "type": "string",
+          "enum": [
+            "left",
+            "right"
+          ],
+          "default": "left",
+          "scope": "window",
+          "description": "状态栏显示在左侧还是右侧。"
+        },
+        "goldTicker.internationalLabel": {
+          "type": "string",
+          "default": "伦敦金",
+          "scope": "window",
+          "description": "国际金价状态栏项前缀。"
+        },
+        "goldTicker.chinaLabel": {
+          "type": "string",
+          "default": "民生金",
+          "scope": "window",
+          "description": "中国金价状态栏项前缀。"
+        },
+        "goldTicker.chinaSource": {
+          "type": "string",
+          "enum": [
+            "jdBank",
+            "jdSnapshot",
+            "jijinhao",
+            "proxy",
+            "sgeDelayed"
+          ],
+          "default": "jdBank",
+          "scope": "window",
+          "markdownDescription": "中国金价来源。`jdBank` 使用京东黄金盯盘页里的银行金价，默认推荐，可再用 `goldTicker.chinaBank` 选择 `民生金` 或 `浙商金`；`jdSnapshot` 使用京东黄金盯盘页的 `Au99.99` 快照；`jijinhao` 使用集金号实时行情；`proxy` 使用 `伦敦金 × USD/CNY ÷ 31.1034768` 实时换算；`sgeDelayed` 使用上海黄金交易所官网延时行情。"
+        },
+        "goldTicker.chinaBank": {
+          "type": "string",
+          "enum": [
+            "minsheng",
+            "zheshang"
+          ],
+          "default": "minsheng",
+          "scope": "window",
+          "markdownDescription": "当 `chinaSource = \"jdBank\"` 时使用的银行金价。`minsheng` 为民生金，`zheshang` 为浙商金。"
+        },
+        "goldTicker.chinaSymbol": {
+          "type": "string",
+          "default": "Au99.99",
+          "scope": "window",
+          "description": "当 chinaSource 为 sgeDelayed 时使用的上海黄金交易所合约代码，默认 Au99.99。"
+        },
+        "goldTicker.showDelta": {
+          "type": "boolean",
+          "default": true,
+          "scope": "window",
+          "description": "是否在状态栏中显示涨跌额。优先显示源站涨跌，源站未提供时回退到相对上一次刷新。"
+        },
+        "goldTicker.usdPrecision": {
+          "type": "number",
+          "default": 2,
+          "minimum": 0,
+          "maximum": 4,
+          "scope": "window",
+          "description": "国际金价显示精度。"
+        },
+        "goldTicker.cnyPrecision": {
+          "type": "number",
+          "default": 2,
+          "minimum": 0,
+          "maximum": 4,
+          "scope": "window",
+          "description": "中国金价显示精度。"
+        },
+        "goldTicker.deltaPrecision": {
+          "type": "number",
+          "default": 2,
+          "minimum": 0,
+          "maximum": 4,
+          "scope": "window",
+          "description": "涨跌额显示精度。"
+        },
+        "goldTicker.upColor": {
+          "type": "string",
+          "default": "#dc2626",
+          "scope": "window",
+          "description": "上涨时的文字颜色。默认高对比红色。"
+        },
+        "goldTicker.downColor": {
+          "type": "string",
+          "default": "#16a34a",
+          "scope": "window",
+          "description": "下跌时的文字颜色。默认高对比绿色。"
+        },
+        "goldTicker.flatColor": {
+          "type": "string",
+          "default": "",
+          "scope": "window",
+          "description": "持平时的文字颜色。留空时跟随当前主题默认前景色。"
+        },
+        "goldTicker.loadingColor": {
+          "type": "string",
+          "default": "",
+          "scope": "window",
+          "description": "加载中的文字颜色。留空时跟随当前主题默认前景色。"
+        },
+        "goldTicker.errorColor": {
+          "type": "string",
+          "default": "",
+          "scope": "window",
+          "description": "请求失败时的文字颜色。留空时使用 VS Code 的 warning 前景色。"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "package:vsix": "vsce package --allow-missing-repository"
+  },
+  "devDependencies": {
+    "@types/node": "^20.17.57",
+    "@types/vscode": "^1.90.0",
+    "@vscode/vsce": "^3.7.1",
+    "typescript": "^5.8.2"
+  }
+}
